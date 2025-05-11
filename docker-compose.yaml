@@ -1,0 +1,41 @@
+version: '3.7'
+services:
+    esquema1:
+        image: lizbareno/esquema:0.2
+        ports:
+          - "3001:3000"
+        expose:
+          - "1433"
+        command: npm run opt
+        depends_on:
+          - sqlserver1
+    sqlserver1:
+        image: lizbareno/mssql-docker:0.1
+        ports:  
+          - "1433:1433"
+        env_file:
+          - sqlserver.env
+          - sapassword.env
+        volumes: 
+          - sqlsystem:/var/opt/mssql/
+          - sqldata:/var/opt/sqlserver/data
+          - sqllog:/var/opt/sqlserver/log
+          - sqlbackup:/var/opt/sqlserver/backup
+    nodejsserver1:
+        image: lizbareno/nodejs-docker:0.2
+        ports:
+          - "3000:3000"
+        depends_on: 
+          - sqlserver1
+    angularserver1:
+        image: lizbareno/angular-docker:0.5
+        ports: 
+          - "4200:4200"
+        depends_on:
+          - sqlserver1
+          - nodejsserver1
+volumes:
+    sqlsystem:
+    sqldata:
+    sqllog:
+    sqlbackup:

@@ -1,0 +1,32 @@
+version: '3.7'
+services:
+    sqlserver1:
+        image: lizbareno/mssql-docker:0.1
+        ports:  
+          - "1433:1433"
+        env_file:
+          - sqlserver.env
+          - sapassword.env
+        volumes: 
+          - sqlsystem_2:/var/opt/mssql/
+          - sqldata_2:/var/opt/sqlserver/data
+          - sqllog_2:/var/opt/sqlserver/log
+          - sqlbackup_2:/var/opt/sqlserver/backup
+    nodejsserver1:
+        image: lizbareno/nodejs-docker:0.2
+        ports:
+          - "3000:3000"
+        depends_on: 
+          - sqlserver1
+    angularserver1:
+        image: lizbareno/angular-docker:0.4
+        ports: 
+          - "4200:4200"
+        depends_on:
+          - sqlserver1
+          - nodejsserver1
+volumes:
+    sqlsystem_2:
+    sqldata_2:
+    sqllog_2:
+    sqlbackup_2:
